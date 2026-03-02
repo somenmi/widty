@@ -14,7 +14,7 @@
 
 [![Web App](https://shields.io/badge/WEB-APP-red.svg)](https://somenmi.github.io/widty/)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)
 ![Language](https://img.shields.io/badge/lang-RU%20%7C%20EN-orange.svg)
 
 </div>
@@ -52,6 +52,10 @@
     × Языки
         ↪︎ Русский / English (перевод интерфейса)
         ↪︎ Перевод экспорта
+
+    × v1.0.1 : Иконки и Автоматическая проверка орфографии
+        ↪︎ Иконки вместо букв (B, I, U, ...)
+        ↪︎ Добавлен функционал ВКЛ/ВЫКЛ (АПО)
 
 ## 🛠 Использование
 1. Откройте [веб-приложение](https://somenmi.github.io/widty/)

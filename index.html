@@ -215,31 +215,54 @@
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+            position: relative;
+        }
+
+        .bug-btn {
+            margin-left: auto;
+            background: #3a4450;
+            border: 1px solid #4a5664;
+            color: #cbd5e0;
+        }
+
+        .bug-btn:hover {
+            background: #475563;
+            border-color: #5e6e7e;
+            color: #ffffff;
+        }
+
+        .bug-btn.off {
+            background: #2f3842;
+            border-color: #5f4444;
+            color: #d88c8c;
+            opacity: 0.7;
+        }
+
+        .bug-btn.off:hover {
+            background: #5f4444;
+            color: #ffffff;
+            opacity: 1;
         }
 
         .tool-btn {
             background: #3a4450;
             border: 1px solid #4a5664;
             color: #cbd5e0;
-            padding: 8px 16px;
+            padding: 4px 14px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 1.4em;
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            width: auto;
         }
 
         .tool-btn:hover {
             background: #475563;
             border-color: #5e6e7e;
             color: #ffffff;
-        }
-
-        .tool-btn i {
-            font-style: normal;
-            font-weight: 600;
         }
 
         .notes-area {
@@ -572,11 +595,20 @@
         <div class="main-content">
             <div class="editor-container">
                 <div class="editor-toolbar">
-                    <button class="tool-btn" onclick="formatText('bold')" title="Жирный"><i>B</i></button>
-                    <button class="tool-btn" onclick="formatText('italic')" title="Курсив"><i>I</i></button>
-                    <button class="tool-btn" onclick="formatText('underline')" title="Подчеркнутый"><i>U</i></button>
-                    <button class="tool-btn" onclick="insertBulletList()" title="Маркированный список">•</button>
-                    <button class="tool-btn" onclick="insertNumberedList()" title="Нумерованный список">1.</button>
+                    <button class="tool-btn" onclick="formatText('bold')" title="Жирный"><i
+                            class="ri-bold"></i></button>
+                    <button class="tool-btn" onclick="formatText('italic')" title="Курсив"><i
+                            class="ri-italic"></i></button>
+                    <button class="tool-btn" onclick="formatText('underline')" title="Подчеркнутый"><i
+                            class="ri-underline"></i></button>
+                    <button class="tool-btn" onclick="insertBulletList()" title="Маркированный список"><i
+                            class="ri-list-check-3"></i></button>
+                    <button class="tool-btn" onclick="insertNumberedList()" title="Нумерованный список"><i
+                            class="ri-list-ordered-2"></i></button>
+                    <button class="tool-btn bug-btn" id="bugBtn" onclick="toggleSpellcheck()"
+                        title="Проверка орфографии">
+                        <i class="ri-bug-fill"></i>
+                    </button>
                 </div>
                 <div id="notesArea" class="notes-area" contenteditable="true"
                     data-placeholder-ru="Что вы делали сегодня?" data-placeholder-en="What did you do today?"
@@ -686,6 +718,7 @@
 
         let currentDateKey = getDateKey(new Date());
         let selectedDate = new Date();
+        let spellcheckEnabled = true;
 
         let saveTimeout;
         let lastSavedContent = '';
@@ -814,6 +847,8 @@
                     console.error('Error loading settings:', e);
                 }
             }
+            
+            loadSpellcheckSetting();
         }
 
         function saveSettings() {
@@ -1108,6 +1143,48 @@
             }
         }
 
+        function toggleSpellcheck() {
+            spellcheckEnabled = !spellcheckEnabled;
+
+            notesArea.setAttribute('spellcheck', spellcheckEnabled);
+
+            const bugBtn = document.getElementById('bugBtn');
+            const icon = bugBtn.querySelector('i');
+
+            if (spellcheckEnabled) {
+                icon.className = 'ri-bug-fill';
+                bugBtn.classList.remove('off');
+                bugBtn.setAttribute('title', 'Выключить проверку орфографии');
+            } else {
+                icon.className = 'ri-bug-line';
+                bugBtn.classList.add('off');
+                bugBtn.setAttribute('title', 'Включить проверку орфографии');
+            }
+
+            localStorage.setItem('spellcheck_enabled', spellcheckEnabled);
+        }
+
+        function loadSpellcheckSetting() {
+            const saved = localStorage.getItem('spellcheck_enabled');
+            if (saved !== null) {
+                spellcheckEnabled = saved === 'true';
+                notesArea.setAttribute('spellcheck', spellcheckEnabled);
+
+                const bugBtn = document.getElementById('bugBtn');
+                const icon = bugBtn.querySelector('i');
+
+                if (spellcheckEnabled) {
+                    icon.className = 'ri-bug-fill';
+                    bugBtn.classList.remove('off');
+                    bugBtn.setAttribute('title', 'Выключить проверку орфографии');
+                } else {
+                    icon.className = 'ri-bug-line';
+                    bugBtn.classList.add('off');
+                    bugBtn.setAttribute('title', 'Включить проверку орфографии');
+                }
+            }
+        }
+
         function hideDatePicker() {
             nativeDatePicker.classList.remove('active');
         }
@@ -1337,6 +1414,7 @@ ${plainText}
         window.exportAllDays = exportAllDays;
         window.changeFont = changeFont;
         window.changeLanguage = changeLanguage;
+        window.toggleSpellcheck = toggleSpellcheck;
     </script>
 </body>
 
