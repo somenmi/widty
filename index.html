@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What I Did Today?</title>
+    <link rel="icon" type="image/x-icon" href="https://github.com/somenmi/images/raw/main/WIDTY/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="https://github.com/somenmi/images/raw/main/WIDTY/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1a1e24;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: #252b33;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            padding: 32px 40px 20px;
+            background: #2a313a;
+            border-bottom: 1px solid #3a434e;
+        }
+
+        .main-date {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .today-btn {
+            background: #323b45;
+            border: 1px solid #45515d;
+            color: #a0b3c5;
+            height: 48px;
+            padding: 0 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .today-btn:hover {
+            background: #3f4a56;
+            border-color: #5e6e7e;
+            color: #e8edf2;
+        }
+
+        .current-date-large {
+            font-size: 3.2em;
+            font-weight: 400;
+            color: #e8edf2;
+            letter-spacing: -0.5px;
+            line-height: 1.15;
+            flex: 1;
+            cursor: ns-resize;
+            user-select: none;
+            padding: 4px 0;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .current-date-large:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .date-picker-btn {
+            background: #323b45;
+            border: 1px solid #45515d;
+            color: #a0b3c5;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.4em;
+        }
+
+        .date-picker-btn:hover {
+            background: #3f4a56;
+            border-color: #5e6e7e;
+            color: #e8edf2;
+        }
+
+        .native-date-picker {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: #2a313a;
+            border: 1px solid #45515d;
+            border-radius: 12px;
+            padding: 16px;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+
+        .native-date-picker.active {
+            display: block;
+        }
+
+        .native-date-picker input {
+            width: 100%;
+            padding: 10px;
+            background: #323b45;
+            border: 1px solid #45515d;
+            color: #e8edf2;
+            border-radius: 6px;
+            font-size: 1.1em;
+        }
+
+        .date-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .nav-arrow {
+            background: none;
+            border: none;
+            color: #8a9bb0;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-arrow:hover {
+            background: #323b45;
+            color: #e8edf2;
+        }
+
+        .nav-arrow.prev span,
+        .nav-arrow.next span {
+            font-size: 0.9em;
+            margin: 0 4px;
+        }
+
+        .nav-center {
+            display: flex;
+            gap: 16px;
+            color: #8a9bb0;
+        }
+
+        .nav-date-item {
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95em;
+            border: 1px solid transparent;
+        }
+
+        .nav-date-item:hover {
+            border-color: #5e6e7e;
+            color: #e8edf2;
+        }
+
+        .nav-date-item.active {
+            background: #3b4653;
+            color: #ffffff;
+            border-color: #5e6e7e;
+        }
+
+        .main-content {
+            padding: 32px 40px;
+            background: #252b33;
+            transition: padding-bottom 0.3s ease;
+        }
+
+        .editor-container {
+            background: #2a313a;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #3a434e;
+        }
+
+        .editor-toolbar {
+            padding: 16px 20px;
+            background: #2f3842;
+            border-bottom: 1px solid #3a434e;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tool-btn {
+            background: #3a4450;
+            border: 1px solid #4a5664;
+            color: #cbd5e0;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tool-btn:hover {
+            background: #475563;
+            border-color: #5e6e7e;
+            color: #ffffff;
+        }
+
+        .tool-btn i {
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        .notes-area {
+            width: 100%;
+            min-height: 350px;
+            padding: 24px;
+            background: #2a313a;
+            border: none;
+            outline: none;
+            font-size: 1.1em;
+            line-height: 1.15;
+            color: #e8edf2;
+            font-family: inherit;
+            resize: vertical;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            transition: font-size 0.2s ease, line-height 0.2s ease, font-family 0.2s ease;
+        }
+
+        .notes-area ul,
+        .notes-area ol {
+            padding-left: 24px;
+            margin: 4px 0;
+        }
+
+        .notes-area li {
+            margin: 2px 0;
+            padding-left: 4px;
+            transition: line-height 0.2s ease;
+        }
+
+        .notes-area ul li {
+            list-style-type: disc;
+        }
+
+        .notes-area ol li {
+            list-style-type: decimal;
+        }
+
+        .notes-area:empty:before {
+            content: attr(placeholder);
+            color: #5f6f80;
+            font-style: italic;
+        }
+
+        .notes-area:focus:empty:before {
+            content: '';
+        }
+
+        .status-bar {
+            padding: 16px 40px;
+            background: #2a313a;
+            border-top: 1px solid #3a434e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #8a9bb0;
+            font-size: 0.9em;
+            flex-wrap: wrap;
+            gap: 12px;
+            position: relative;
+        }
+
+        .save-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .save-status.saved {
+            color: #6b8f7a;
+        }
+
+        .save-status.saving {
+            color: #c9a45b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: #323b45;
+            border: 1px solid #45515d;
+            color: #a0b3c5;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: #3f4a56;
+            border-color: #5e6e7e;
+            color: #e8edf2;
+        }
+
+        .icon-btn[data-tooltip] {
+            position: relative;
+        }
+
+        .icon-btn[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e242c;
+            color: #e8edf2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            white-space: nowrap;
+            margin-bottom: 6px;
+            border: 1px solid #45515d;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .settings-accordion {
+            background: #1e242c;
+            border-top: 1px solid #3a434e;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .settings-accordion.open {
+            max-height: 400px;
+        }
+
+        .settings-content {
+            padding: 24px 40px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .setting-label {
+            color: #a0b3c5;
+            font-size: 0.9em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .setting-value {
+            color: #e8edf2;
+            font-size: 0.9em;
+            background: #2a313a;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: #323b45;
+            border-radius: 2px;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #5e6e7e;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #6e7e90;
+        }
+
+        .selector {
+            display: flex;
+            gap: 8px;
+            background: #2a313a;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .selector-option {
+            flex: 1;
+            padding: 6px;
+            text-align: center;
+            color: #a0b3c5;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+        }
+
+        .selector-option:hover {
+            background: #323b45;
+            color: #e8edf2;
+        }
+
+        .selector-option.active {
+            background: #3b4653;
+            color: #ffffff;
+        }
+
+        .clear-btn {
+            background: none;
+            border: 1px solid #5f4444;
+            color: #d88c8c;
+        }
+
+        .clear-btn:hover {
+            background: #5f4444;
+            color: #ffffff;
+        }
+
+        @media (max-width: 800px) {
+            .settings-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .header,
+            .main-content,
+            .status-bar {
+                padding: 24px 20px;
+            }
+
+            .settings-content {
+                padding: 24px 20px;
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .settings-accordion.open {
+                max-height: 500px;
+            }
+
+            .current-date-large {
+                font-size: 2.4em;
+            }
+
+            .main-date {
+                flex-wrap: wrap;
+            }
+
+            .today-btn {
+                order: 1;
+            }
+
+            .date-picker-btn {
+                order: 2;
+            }
+
+            .current-date-large {
+                order: 3;
+                width: 100%;
+                text-align: center;
+            }
+
+            .native-date-picker {
+                right: 20px;
+                left: 20px;
+                width: auto;
+            }
+
+            .nav-center {
+                gap: 8px;
+            }
+
+            .nav-date-item {
+                padding: 4px 12px;
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="main-date">
+                <button class="today-btn" id="todayBtn" title="Перейти к сегодня">
+                    Today
+                </button>
+
+                <div class="current-date-large" id="currentDateLarge">1 марта</div>
+
+                <button class="date-picker-btn icon-btn" id="showDatePicker" data-tooltip-ru="Выбрать дату"
+                    data-tooltip-en="Select date" data-tooltip="Выбрать дату">
+                    <i class="ri-calendar-schedule-fill"></i>
+                </button>
+
+                <div class="native-date-picker" id="nativeDatePicker">
+                    <input type="date" id="datePickerInput">
+                </div>
+            </div>
+
+            <div class="date-navigation">
+                <button class="nav-arrow prev" id="prevDay">
+                    ← <span id="prevDateLabel">28 февраля</span>
+                </button>
+
+                <div class="nav-center">
+                    <span class="nav-date-item" id="prevDateShort">28 фев</span>
+                    <span class="nav-date-item active" id="currentDateShort">1 мар</span>
+                    <span class="nav-date-item" id="nextDateShort">2 мар</span>
+                </div>
+
+                <button class="nav-arrow next" id="nextDay">
+                    <span id="nextDateLabel">2 марта</span> →
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="editor-container">
+                <div class="editor-toolbar">
+                    <button class="tool-btn" onclick="formatText('bold')" title="Жирный"><i>B</i></button>
+                    <button class="tool-btn" onclick="formatText('italic')" title="Курсив"><i>I</i></button>
+                    <button class="tool-btn" onclick="formatText('underline')" title="Подчеркнутый"><i>U</i></button>
+                    <button class="tool-btn" onclick="insertBulletList()" title="Маркированный список">•</button>
+                    <button class="tool-btn" onclick="insertNumberedList()" title="Нумерованный список">1.</button>
+                </div>
+                <div id="notesArea" class="notes-area" contenteditable="true"
+                    data-placeholder-ru="Что вы делали сегодня?" data-placeholder-en="What did you do today?"
+                    placeholder="Что вы делали сегодня?"></div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div id="saveStatus" class="save-status saved" data-saved-ru="💾 Все заметки сохранены"
+                data-saved-en="💾 All notes saved" data-saving-ru="⏳ Сохранение..." data-saving-en="⏳ Saving...">💾 Все
+                заметки сохранены</div>
+
+            <div class="action-buttons">
+                <button class="icon-btn" id="settingsBtn" data-tooltip-ru="Настройки" data-tooltip-en="Settings"
+                    data-tooltip="Настройки">
+                    <i class="ri-settings-4-fill"></i>
+                </button>
+
+                <button class="icon-btn" onclick="exportCurrentDay()" data-tooltip-ru="Экспорт дня"
+                    data-tooltip-en="Export day" data-tooltip="Экспорт дня">
+                    <i class="ri-file-list-2-line"></i>
+                </button>
+
+                <button class="icon-btn" onclick="exportAllDays()" data-tooltip-ru="Экспорт всех"
+                    data-tooltip-en="Export all" data-tooltip="Экспорт всех">
+                    <i class="ri-file-copy-2-line"></i>
+                </button>
+
+                <button class="icon-btn clear-btn" onclick="clearCurrentDay()" data-tooltip-ru="Очистить"
+                    data-tooltip-en="Clear" data-tooltip="Очистить">
+                    <i class="ri-eraser-fill"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="settings-accordion" id="settingsAccordion">
+            <div class="settings-content">
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span data-label-ru="Размер шрифта" data-label-en="Font size">Размер шрифта</span>
+                        <span class="setting-value" id="fontSizeValue">1.1em</span>
+                    </div>
+                    <input type="range" id="fontSizeSlider" min="0.8" max="2.0" step="0.1" value="1.1">
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span data-label-ru="Высота строки" data-label-en="Line height">Высота строки</span>
+                        <span class="setting-value" id="lineHeightValue">1.15</span>
+                    </div>
+                    <input type="range" id="lineHeightSlider" min="1.0" max="2.0" step="0.05" value="1.15">
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span data-label-ru="Шрифт" data-label-en="Font">Шрифт</span>
+                    </div>
+                    <div class="selector" id="fontSelector">
+                        <div class="selector-option active" data-font="system" onclick="changeFont('system')">System
+                        </div>
+                        <div class="selector-option" data-font="Georgia" onclick="changeFont('Georgia')">Georgia</div>
+                        <div class="selector-option" data-font="Verdana" onclick="changeFont('Verdana')">Verdana</div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span data-label-ru="Язык" data-label-en="Language">Язык</span>
+                    </div>
+                    <div class="selector" id="languageSelector">
+                        <div class="selector-option" data-lang="ru" onclick="changeLanguage('ru')">Русский</div>
+                        <div class="selector-option" data-lang="en" onclick="changeLanguage('en')">English</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_PREFIX = 'whatIDidToday_';
+        const SETTINGS_KEY = 'whatIDidToday_settings';
+
+        const notesArea = document.getElementById('notesArea');
+        const saveStatus = document.getElementById('saveStatus');
+
+        const currentDateLarge = document.getElementById('currentDateLarge');
+        const currentDateShort = document.getElementById('currentDateShort');
+        const prevDateShort = document.getElementById('prevDateShort');
+        const nextDateShort = document.getElementById('nextDateShort');
+        const prevDateLabel = document.getElementById('prevDateLabel');
+        const nextDateLabel = document.getElementById('nextDateLabel');
+
+        const nativeDatePicker = document.getElementById('nativeDatePicker');
+        const datePickerInput = document.getElementById('datePickerInput');
+        const showDatePickerBtn = document.getElementById('showDatePicker');
+
+        const todayBtn = document.getElementById('todayBtn');
+
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsAccordion = document.getElementById('settingsAccordion');
+        const fontSizeSlider = document.getElementById('fontSizeSlider');
+        const lineHeightSlider = document.getElementById('lineHeightSlider');
+        const fontSizeValue = document.getElementById('fontSizeValue');
+        const lineHeightValue = document.getElementById('lineHeightValue');
+        const fontOptions = document.querySelectorAll('[data-font]');
+        const languageOptions = document.querySelectorAll('[data-lang]');
+
+        let currentDateKey = getDateKey(new Date());
+        let selectedDate = new Date();
+
+        let saveTimeout;
+        let lastSavedContent = '';
+
+        const translations = {
+            ru: {
+                today: 'Сегодня',
+                settings: 'Настройки',
+                exportDay: 'Экспорт дня',
+                exportAll: 'Экспорт всех',
+                clear: 'Очистить',
+                selectDate: 'Выбрать дату',
+                saved: '💾 Все заметки сохранены',
+                saving: '⏳ Сохранение...',
+                placeholder: 'Что вы делали сегодня?',
+                fontSize: 'Размер шрифта',
+                lineHeight: 'Межстрочный интервал',
+                font: 'Шрифт',
+                language: 'Язык',
+                exportDate: 'Дата выгрузки',
+                summaryFor: 'Сводка за',
+                content: 'Контент',
+                exportedDates: 'Выгружены даты с',
+                to: 'по',
+                noEntries: 'Нет записей за этот день',
+                noSavedEntries: 'Нет сохраненных записей',
+                months: {
+                    'January': 'января',
+                    'February': 'февраля',
+                    'March': 'марта',
+                    'April': 'апреля',
+                    'May': 'мая',
+                    'June': 'июня',
+                    'July': 'июля',
+                    'August': 'августа',
+                    'September': 'сентября',
+                    'October': 'октября',
+                    'November': 'ноября',
+                    'December': 'декабря'
+                },
+                shortMonths: {
+                    'Jan': 'янв',
+                    'Feb': 'фев',
+                    'Mar': 'мар',
+                    'Apr': 'апр',
+                    'May': 'май',
+                    'Jun': 'июн',
+                    'Jul': 'июл',
+                    'Aug': 'авг',
+                    'Sep': 'сен',
+                    'Oct': 'окт',
+                    'Nov': 'ноя',
+                    'Dec': 'дек'
+                }
+            },
+            en: {
+                today: 'Today',
+                settings: 'Settings',
+                exportDay: 'Export day',
+                exportAll: 'Export all',
+                clear: 'Clear',
+                selectDate: 'Select date',
+                saved: '💾 All notes saved',
+                saving: '⏳ Saving...',
+                placeholder: 'What did you do today?',
+                fontSize: 'Font size',
+                lineHeight: 'Line height',
+                font: 'Font',
+                language: 'Language',
+                exportDate: 'Export date',
+                summaryFor: 'Summary for',
+                content: 'Content',
+                exportedDates: 'Exported dates from',
+                to: 'to',
+                noEntries: 'No entries for this day',
+                noSavedEntries: 'No saved entries',
+                months: {
+                    'January': 'January',
+                    'February': 'February',
+                    'March': 'March',
+                    'April': 'April',
+                    'May': 'May',
+                    'June': 'June',
+                    'July': 'July',
+                    'August': 'August',
+                    'September': 'September',
+                    'October': 'October',
+                    'November': 'November',
+                    'December': 'December'
+                },
+                shortMonths: {
+                    'Jan': 'Jan',
+                    'Feb': 'Feb',
+                    'Mar': 'Mar',
+                    'Apr': 'Apr',
+                    'May': 'May',
+                    'Jun': 'Jun',
+                    'Jul': 'Jul',
+                    'Aug': 'Aug',
+                    'Sep': 'Sep',
+                    'Oct': 'Oct',
+                    'Nov': 'Nov',
+                    'Dec': 'Dec'
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+
+        let settings = {
+            fontSize: 1.1,
+            lineHeight: 1.15,
+            fontFamily: 'system',
+            language: 'ru'
+        };
+
+        function loadSettings() {
+            const savedSettings = localStorage.getItem(SETTINGS_KEY);
+            if (savedSettings) {
+                try {
+                    settings = JSON.parse(savedSettings);
+                    currentLang = settings.language || 'ru';
+                    applySettings();
+                    updateLanguage();
+                } catch (e) {
+                    console.error('Error loading settings:', e);
+                }
+            }
+        }
+
+        function saveSettings() {
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        }
+
+        function applySettings() {
+            notesArea.style.fontSize = settings.fontSize + 'em';
+            fontSizeSlider.value = settings.fontSize;
+            fontSizeValue.textContent = settings.fontSize + 'em';
+
+            notesArea.style.lineHeight = settings.lineHeight;
+            lineHeightSlider.value = settings.lineHeight;
+            lineHeightValue.textContent = settings.lineHeight;
+
+            switch (settings.fontFamily) {
+                case 'Georgia':
+                    notesArea.style.fontFamily = 'Georgia, serif';
+                    break;
+                case 'Verdana':
+                    notesArea.style.fontFamily = 'Verdana, sans-serif';
+                    break;
+                default:
+                    notesArea.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif';
+            }
+
+            fontOptions.forEach(opt => {
+                const font = opt.dataset.font;
+                if (font === settings.fontFamily) {
+                    opt.classList.add('active');
+                } else {
+                    opt.classList.remove('active');
+                }
+            });
+
+            languageOptions.forEach(opt => {
+                const lang = opt.dataset.lang;
+                if (lang === settings.language) {
+                    opt.classList.add('active');
+                } else {
+                    opt.classList.remove('active');
+                }
+            });
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLang];
+
+            todayBtn.textContent = t.today;
+
+            notesArea.setAttribute('placeholder', t.placeholder);
+
+            if (saveStatus.classList.contains('saved')) {
+                saveStatus.innerHTML = t.saved;
+            } else if (saveStatus.classList.contains('saving')) {
+                saveStatus.innerHTML = t.saving;
+            }
+
+            document.querySelectorAll('.icon-btn').forEach(btn => {
+                if (btn.id === 'settingsBtn') {
+                    btn.setAttribute('data-tooltip', t.settings);
+                } else if (btn.querySelector('.ri-file-list-2-line')) {
+                    btn.setAttribute('data-tooltip', t.exportDay);
+                } else if (btn.querySelector('.ri-file-copy-2-line')) {
+                    btn.setAttribute('data-tooltip', t.exportAll);
+                } else if (btn.querySelector('.ri-eraser-fill')) {
+                    btn.setAttribute('data-tooltip', t.clear);
+                }
+            });
+
+            if (showDatePickerBtn) {
+                showDatePickerBtn.setAttribute('data-tooltip', t.selectDate);
+            }
+
+            document.querySelectorAll('[data-label-ru]').forEach(el => {
+                const ruLabel = el.getAttribute('data-label-ru');
+                const enLabel = el.getAttribute('data-label-en');
+                el.textContent = currentLang === 'ru' ? ruLabel : enLabel;
+            });
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            settings.language = lang;
+            updateLanguage();
+            saveSettings();
+
+            updateDateDisplay();
+        }
+
+        function changeFont(font) {
+            settings.fontFamily = font;
+            applySettings();
+            saveSettings();
+        }
+
+        function getDateKey(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function formatDateLarge(date) {
+            const day = date.getDate();
+            const monthName = date.toLocaleString(currentLang === 'ru' ? 'ru' : 'en', { month: 'long' });
+            const year = date.getFullYear();
+            const currentYear = new Date().getFullYear();
+
+            if (year !== currentYear) {
+                return `${day} ${monthName} ${year}`;
+            }
+            return `${day} ${monthName}`;
+        }
+
+        function formatDateShort(date) {
+            const day = date.getDate();
+            let monthName = date.toLocaleString(currentLang === 'ru' ? 'ru' : 'en', { month: 'short' });
+            if (currentLang === 'ru') {
+                monthName = monthName.replace('.', '');
+            }
+            return `${day} ${monthName}`;
+        }
+
+        function formatDateWithMonth(date) {
+            const day = date.getDate();
+            const monthName = date.toLocaleString(currentLang === 'ru' ? 'ru' : 'en', { month: 'long' });
+            const year = date.getFullYear();
+
+            if (currentLang === 'ru') {
+                const englishMonth = date.toLocaleString('en', { month: 'long' });
+                const russianMonth = translations.ru.months[englishMonth] || monthName;
+                return `${day} ${russianMonth} ${year} года`;
+            }
+
+            return `${monthName} ${day}, ${year}`;
+        }
+
+        function formatDateForExport(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+
+        function getCurrentDateTimeForExport() {
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return `${day}.${month}.${year} / ${hours}:${minutes}`;
+        }
+
+        function updateDateDisplay() {
+            const yesterday = new Date(selectedDate);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const tomorrow = new Date(selectedDate);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            currentDateLarge.textContent = formatDateLarge(selectedDate);
+            currentDateShort.textContent = formatDateShort(selectedDate);
+            prevDateShort.textContent = formatDateShort(yesterday);
+            nextDateShort.textContent = formatDateShort(tomorrow);
+            prevDateLabel.textContent = formatDateLarge(yesterday);
+            nextDateLabel.textContent = formatDateLarge(tomorrow);
+
+            currentDateKey = getDateKey(selectedDate);
+        }
+
+        function loadNotesForDate(date) {
+            const dateKey = getDateKey(date);
+            const savedNotes = localStorage.getItem(STORAGE_PREFIX + dateKey);
+
+            if (savedNotes) {
+                notesArea.innerHTML = savedNotes;
+                lastSavedContent = savedNotes;
+            } else {
+                notesArea.innerHTML = '';
+                lastSavedContent = '';
+            }
+
+            updateDateDisplay();
+        }
+
+        function saveNotes() {
+            const currentContent = notesArea.innerHTML;
+            const dateKey = getDateKey(selectedDate);
+            const t = translations[currentLang];
+
+            if (currentContent !== lastSavedContent) {
+                saveStatus.className = 'save-status saving';
+                saveStatus.innerHTML = t.saving;
+
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(() => {
+                    try {
+                        localStorage.setItem(STORAGE_PREFIX + dateKey, currentContent);
+                        lastSavedContent = currentContent;
+                        saveStatus.className = 'save-status saved';
+                        saveStatus.innerHTML = t.saved;
+                    } catch (e) {
+                        saveStatus.className = 'save-status error';
+                        saveStatus.innerHTML = '❌ Error saving';
+                        console.error('Save error:', e);
+                    }
+                }, 500);
+            }
+        }
+
+        function formatText(command) {
+            document.execCommand(command, false, null);
+            notesArea.focus();
+            saveNotes();
+        }
+
+        function insertBulletList() {
+            document.execCommand('insertUnorderedList', false, null);
+            notesArea.focus();
+            saveNotes();
+        }
+
+        function insertNumberedList() {
+            document.execCommand('insertOrderedList', false, null);
+            notesArea.focus();
+            saveNotes();
+        }
+
+        function clearCurrentDay() {
+            const t = translations[currentLang];
+            if (confirm(currentLang === 'ru' ? 'Очистить все заметки за этот день?' : 'Clear all notes for this day?')) {
+                notesArea.innerHTML = '';
+                saveNotes();
+            }
+        }
+
+        function goToPrevDay() {
+            const newDate = new Date(selectedDate);
+            newDate.setDate(newDate.getDate() - 1);
+            selectedDate = newDate;
+            loadNotesForDate(selectedDate);
+        }
+
+        function goToNextDay() {
+            const newDate = new Date(selectedDate);
+            newDate.setDate(newDate.getDate() + 1);
+            selectedDate = newDate;
+            loadNotesForDate(selectedDate);
+        }
+
+        function goToToday() {
+            selectedDate = new Date();
+            loadNotesForDate(selectedDate);
+            hideDatePicker();
+        }
+
+        let scrollTimeout;
+        function handleDateScroll(e) {
+            e.preventDefault();
+
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const delta = Math.sign(e.deltaY);
+                const isShift = e.shiftKey;
+                const isAlt = e.altKey;
+
+                const newDate = new Date(selectedDate);
+
+                if (isShift) {
+                    newDate.setFullYear(newDate.getFullYear() - delta);
+                } else if (isAlt) {
+                    newDate.setMonth(newDate.getMonth() - delta);
+                } else {
+                    newDate.setDate(newDate.getDate() - delta);
+                }
+
+                selectedDate = newDate;
+                loadNotesForDate(selectedDate);
+            }, 10);
+        }
+
+        function toggleDatePicker(e) {
+            e.stopPropagation();
+
+            if (nativeDatePicker.classList.contains('active')) {
+                hideDatePicker();
+            } else {
+                datePickerInput.value = getDateKey(selectedDate);
+                nativeDatePicker.classList.add('active');
+                setTimeout(() => datePickerInput.focus(), 100);
+            }
+        }
+
+        function hideDatePicker() {
+            nativeDatePicker.classList.remove('active');
+        }
+
+        function handleDatePickerChange(e) {
+            const selectedDateStr = e.target.value;
+            if (!selectedDateStr) return;
+
+            const [year, month, day] = selectedDateStr.split('-').map(Number);
+            const newDate = new Date(year, month - 1, day);
+
+            if (!isNaN(newDate.getTime())) {
+                selectedDate = newDate;
+                loadNotesForDate(selectedDate);
+            }
+
+            hideDatePicker();
+        }
+
+        function convertHtmlToPlainText(html) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+
+            function processNode(node) {
+                let text = '';
+
+                if (node.nodeType === Node.TEXT_NODE) {
+                    text += node.textContent;
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    switch (node.tagName) {
+                        case 'BR':
+                            text += '\n';
+                            break;
+                        case 'DIV':
+                        case 'P':
+                            node.childNodes.forEach(child => {
+                                text += processNode(child);
+                            });
+                            text += '\n';
+                            break;
+                        case 'LI':
+                            text += '• ';
+                            node.childNodes.forEach(child => {
+                                text += processNode(child);
+                            });
+                            text += '\n';
+                            break;
+                        case 'UL':
+                        case 'OL':
+                            node.childNodes.forEach(child => {
+                                text += processNode(child);
+                            });
+                            text += '\n';
+                            break;
+                        default:
+                            node.childNodes.forEach(child => {
+                                text += processNode(child);
+                            });
+                    }
+                }
+
+                return text;
+            }
+
+            let plainText = processNode(tempDiv);
+            plainText = plainText.replace(/\n{3,}/g, '\n\n');
+            plainText = plainText.replace(/^\n+|\n+$/g, '');
+
+            return plainText;
+        }
+
+        function exportCurrentDay() {
+            const content = notesArea.innerHTML;
+            const t = translations[currentLang];
+
+            if (!content || content === '') {
+                alert(t.noEntries);
+                return;
+            }
+
+            const date = selectedDate;
+            const exportDate = getCurrentDateTimeForExport();
+            const formattedDate = formatDateWithMonth(date);
+            const dateKey = formatDateForExport(date);
+
+            const plainText = convertHtmlToPlainText(content);
+
+            const exportText =
+                `###### ${t.exportDate}: [${exportDate}]
+###### ${t.summaryFor}: [${formattedDate}]
+
+### ${t.content}:
+${plainText}`;
+
+            downloadFile(exportText, `what-i-did-${dateKey}.txt`);
+        }
+
+        function exportAllDays() {
+            const allKeys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(STORAGE_PREFIX)) {
+                    allKeys.push(key);
+                }
+            }
+
+            const t = translations[currentLang];
+
+            if (allKeys.length === 0) {
+                alert(t.noSavedEntries);
+                return;
+            }
+
+            allKeys.sort((a, b) => {
+                const dateA = a.replace(STORAGE_PREFIX, '');
+                const dateB = b.replace(STORAGE_PREFIX, '');
+                return dateA.localeCompare(dateB);
+            });
+
+            const exportDate = getCurrentDateTimeForExport();
+            const firstDate = allKeys[0].replace(STORAGE_PREFIX, '');
+            const lastDate = allKeys[allKeys.length - 1].replace(STORAGE_PREFIX, '');
+
+            const firstDateFormatted = firstDate.split('-').reverse().join('.');
+            const lastDateFormatted = lastDate.split('-').reverse().join('.');
+
+            let exportText =
+                `###### ${t.exportDate}: [${exportDate}]
+###### ${t.exportedDates}: [${firstDateFormatted}] ${t.to}: [${lastDateFormatted}]
+
+`;
+
+            allKeys.forEach(key => {
+                const dateStr = key.replace(STORAGE_PREFIX, '');
+                const [year, month, day] = dateStr.split('-').map(Number);
+                const date = new Date(year, month - 1, day);
+                const formattedDate = formatDateWithMonth(date);
+                const content = localStorage.getItem(key);
+
+                if (content && content !== '') {
+                    const plainText = convertHtmlToPlainText(content);
+                    exportText +=
+                        `###### ${t.summaryFor}: [${formattedDate}]
+
+### ${t.content}:
+${plainText}
+
+`;
+                }
+            });
+
+            downloadFile(exportText, `what-i-did-all-${firstDateFormatted}-to-${lastDateFormatted}.txt`);
+        }
+
+        function downloadFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        document.addEventListener('click', function (e) {
+            if (!showDatePickerBtn.contains(e.target) && !nativeDatePicker.contains(e.target)) {
+                hideDatePicker();
+            }
+        });
+
+        document.getElementById('prevDay').addEventListener('click', goToPrevDay);
+        document.getElementById('nextDay').addEventListener('click', goToNextDay);
+        todayBtn.addEventListener('click', goToToday);
+        showDatePickerBtn.addEventListener('click', toggleDatePicker);
+
+        prevDateShort.addEventListener('click', goToPrevDay);
+        currentDateShort.addEventListener('click', goToToday);
+        nextDateShort.addEventListener('click', goToNextDay);
+
+        datePickerInput.addEventListener('change', handleDatePickerChange);
+
+        notesArea.addEventListener('input', saveNotes);
+        notesArea.addEventListener('blur', saveNotes);
+
+        notesArea.addEventListener('paste', function (e) {
+            e.preventDefault();
+            const text = e.clipboardData.getData('text/plain');
+            document.execCommand('insertText', false, text);
+        });
+
+        currentDateLarge.addEventListener('wheel', handleDateScroll, { passive: false });
+
+        settingsBtn.addEventListener('click', () => {
+            settingsAccordion.classList.toggle('open');
+        });
+
+        fontSizeSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            settings.fontSize = val;
+            fontSizeValue.textContent = val + 'em';
+            notesArea.style.fontSize = val + 'em';
+            saveSettings();
+        });
+
+        lineHeightSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            settings.lineHeight = val;
+            lineHeightValue.textContent = val;
+            notesArea.style.lineHeight = val;
+            saveSettings();
+        });
+
+        loadSettings();
+        loadNotesForDate(selectedDate);
+
+        window.addEventListener('beforeunload', function () {
+            const dateKey = getDateKey(selectedDate);
+            if (notesArea.innerHTML !== lastSavedContent) {
+                localStorage.setItem(STORAGE_PREFIX + dateKey, notesArea.innerHTML);
+            }
+        });
+
+        window.formatText = formatText;
+        window.insertBulletList = insertBulletList;
+        window.insertNumberedList = insertNumberedList;
+        window.clearCurrentDay = clearCurrentDay;
+        window.exportCurrentDay = exportCurrentDay;
+        window.exportAllDays = exportAllDays;
+        window.changeFont = changeFont;
+        window.changeLanguage = changeLanguage;
+    </script>
+</body>
+
+</html>
