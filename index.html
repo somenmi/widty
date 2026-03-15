@@ -345,6 +345,30 @@
             gap: 8px;
         }
 
+        .hub-button {
+            border: 1px solid #6d5b37;
+            background: #33322e;
+            color: #a0b3c5;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hub-button:hover {
+            border: 1px solid #ffaa00;
+            background: rgba(155, 111, 0, 0.35);
+        }
+
+        .hub-button img {
+            opacity: 85%;
+        }
+
         .icon-btn {
             background: #323b45;
             border: 1px solid #45515d;
@@ -564,6 +588,11 @@
                 </button>
 
                 <div class="current-date-large" id="currentDateLarge">1 марта</div>
+
+                <a href="https://somenmi.github.io/hub_nity/" class="hub-button">
+                    <img src="https://raw.githubusercontent.com/somenmi/images/main/hub_nity/logo.png" alt="Hub"
+                        style="width: 20px; height: 20px;">
+                </a>
 
                 <button class="date-picker-btn icon-btn" id="showDatePicker" data-tooltip-ru="Выбрать дату"
                     data-tooltip-en="Select date" data-tooltip="Выбрать дату">
@@ -847,7 +876,7 @@
                     console.error('Error loading settings:', e);
                 }
             }
-            
+
             loadSpellcheckSetting();
         }
 
